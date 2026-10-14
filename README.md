@@ -1,3 +1,5 @@
+<p align="center"><img src="brand/toss-logo-dark.png" alt="Toss" width="480"></p>
+
 # Toss
 
 **Send dollars to anyone with a link.** Pick an amount, share the link on WhatsApp, SMS or email, and the person who

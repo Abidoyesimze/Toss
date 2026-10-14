@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="trail" x1="104" y1="400" x2="330" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00C2A8" stop-opacity="0"/>
+      <stop offset="0.55" stop-color="#00C2A8" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#00C2A8" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0A0B0D"/>
+  <!-- the toss: a throwing arc that ends in a coin -->
+  <path d="M104 404 Q 168 196 318 184" fill="none" stroke="url(#trail)" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="352" cy="184" r="64" fill="#00C2A8"/>
+  <circle cx="352" cy="184" r="40" fill="none" stroke="#0A0B0D" stroke-opacity="0.28" stroke-width="10"/>
+</svg>
