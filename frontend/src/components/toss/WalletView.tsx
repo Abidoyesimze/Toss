@@ -11,7 +11,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import { useToast } from "@/components/ui/Toast";
 import { formatUsd, shortAddr } from "@/lib/format";
 import { getOrCreateLocalKey, isBackedUp, loadLocalKey, markBackedUp, saveLocalKey } from "@/lib/localWallet";
-import { usdcBalance } from "@/lib/toss";
+import { GAS_RESERVE, minDeposit, usdcBalance } from "@/lib/toss";
 import { AddMoneySheet } from "./AddMoneySheet";
 import { SendSheet } from "./SendSheet";
 
@@ -27,6 +27,7 @@ export function WalletView() {
   const [restore, setRestore] = useState("");
   const [restoreOpen, setRestoreOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [minimum, setMinimum] = useState(1_000_000n);
 
   useEffect(() => {
     const k = loadLocalKey();
@@ -34,9 +35,12 @@ export function WalletView() {
     setBackedUp(isBackedUp());
     setLoaded(true);
     if (k && new URLSearchParams(location.search).get("add") === "1") setAddOpen(true);
+    minDeposit().then(setMinimum).catch(() => {});
   }, []);
 
   const address = pk ? privateKeyToAddress(pk) : null;
+  // A link needs the contract minimum plus a little USDC for gas.
+  const canLink = balance !== null && balance >= minimum + GAS_RESERVE;
 
   const refresh = useCallback(() => {
     if (address) usdcBalance(address).then(setBalance).catch(() => {});
@@ -151,13 +155,22 @@ export function WalletView() {
               <Button variant="text" onClick={() => setAddOpen(true)}>
                 Add money
               </Button>
-              <Link
-                href="/?from=toss"
-                className="flex h-11 items-center justify-center text-[15px] font-medium text-secondary underline-offset-4 hover:text-primary hover:underline"
-              >
-                Send as a link
-              </Link>
+              {canLink ? (
+                <Link
+                  href="/?from=toss"
+                  className="flex h-11 items-center justify-center text-[15px] font-medium text-secondary underline-offset-4 hover:text-primary hover:underline"
+                >
+                  Send as a link
+                </Link>
+              ) : (
+                <span className="flex h-11 items-center justify-center text-[13px] text-tertiary">Links start at $1</span>
+              )}
             </div>
+            {!canLink && (
+              <p className="text-center text-[13px] text-tertiary">
+                Under $1? Use Send or spend to move it straight to any wallet address.
+              </p>
+            )}
           </>
         ) : (
           <Button onClick={() => setAddOpen(true)}>Add money</Button>

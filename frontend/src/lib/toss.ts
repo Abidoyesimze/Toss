@@ -7,6 +7,7 @@ import { claimDomain, claimTypes } from "./eip712";
 import { buildClaimLink } from "./link";
 import { localWalletClient } from "./localWallet";
 import { saveSentLink } from "./sentLinks";
+import { emitWalletChanged } from "./walletEvents";
 
 export type Signer = WalletClient<Transport, Chain | undefined, Account>;
 
@@ -87,6 +88,7 @@ export async function createLink(
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
   if (receipt.status !== "success") throw new Error("The deposit didn't go through. Your money wasn't sent.");
 
+  emitWalletChanged();
   return { link: buildClaimLink(location.origin, privateKey), claimKey };
 }
 
@@ -114,6 +116,7 @@ export async function claimViaRelayer(linkKey: Hex, recipient: Address, amount: 
   });
   const body = await res.json();
   if (!res.ok) throw new Error(body.error ?? "The claim didn't go through. Try again.");
+  emitWalletChanged();
   return { hash: body.hash as Hex, received: amount - fee };
 }
 
@@ -127,6 +130,7 @@ export async function refundLink(signer: Signer, claimKey: Address) {
   });
   const hash = await signer.writeContract({ ...request, chain });
   await publicClient.waitForTransactionReceipt({ hash });
+  emitWalletChanged();
   return hash;
 }
 
@@ -141,6 +145,7 @@ export async function sendFromLocal(pk: Hex, to: Address, amount: bigint) {
   });
   const receipt = await publicClient.waitForTransactionReceipt({ hash });
   if (receipt.status !== "success") throw new Error("The transfer didn't go through.");
+  emitWalletChanged();
   return hash;
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, ShieldAlert } from "lucide-react";
+import { ArrowUpRight, ShieldAlert, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { isAddress, type Address, type Hex } from "viem";
@@ -199,16 +199,26 @@ export function ClaimCard() {
                 Create your own Toss
               </Link>
             )}
-            {explorerTx(view.hash) && (
-              <a
-                href={explorerTx(view.hash)}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="flex h-11 items-center justify-center gap-1 text-[15px] font-medium text-secondary hover:text-primary"
-              >
-                View on explorer <ArrowUpRight className="size-4" strokeWidth={1.75} />
-              </a>
-            )}
+            <div className={`grid ${view.toToss ? "grid-cols-2" : "grid-cols-1"}`}>
+              {view.toToss && (
+                <Link
+                  href="/wallet"
+                  className="flex h-11 items-center justify-center gap-1.5 text-[15px] font-medium text-secondary hover:text-primary"
+                >
+                  <Wallet className="size-4" strokeWidth={1.75} /> My wallet
+                </Link>
+              )}
+              {explorerTx(view.hash) && (
+                <a
+                  href={explorerTx(view.hash)}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="flex h-11 items-center justify-center gap-1 text-[15px] font-medium text-secondary hover:text-primary"
+                >
+                  Explorer <ArrowUpRight className="size-4" strokeWidth={1.75} />
+                </a>
+              )}
+            </div>
           </div>
           {view.toToss && loadLocalKey() && (
             <SendSheet
