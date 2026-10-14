@@ -17,7 +17,7 @@ import { friendlyError } from "@/lib/errors";
 import { formatDate, formatUsd, parseUsdc, shortAddr } from "@/lib/format";
 import { getOrCreateLocalKey, isBackedUp, loadLocalKey, localWalletClient } from "@/lib/localWallet";
 import { hasInjectedWallet, wcProjectId } from "@/lib/wagmi";
-import { createLink, minDeposit, usdcBalance, type Signer } from "@/lib/toss";
+import { createLink, GAS_RESERVE, minDeposit, usdcBalance, type Signer } from "@/lib/toss";
 import { AddMoneySheet } from "./AddMoneySheet";
 import { AmountChips, AmountInput } from "./AmountInput";
 import { LinkCard } from "./LinkCard";
@@ -83,6 +83,11 @@ export function CreateForm() {
     if (!amount) return null;
     if (minimum !== null && amount < minimum) return `Minimum is ${formatUsd(minimum)}`;
     if (balance !== null && amount > balance) return "That's more than your balance";
+    // On Arc, gas is paid in USDC from the same balance (approve + deposit), so keep a little back.
+    if (balance !== null && amount + GAS_RESERVE > balance) {
+      const max = balance > GAS_RESERVE ? balance - GAS_RESERVE : 0n;
+      return `Leave about $0.01 for network fees (max ${formatUsd(max)})`;
+    }
     return null;
   }, [amount, minimum, balance]);
 
@@ -118,6 +123,8 @@ export function CreateForm() {
       setCreated({ link, amount, expiry: exp });
     } catch (err) {
       toast("error", friendlyError(err));
+      // Gas may have been spent (e.g. on approve) even though the deposit failed.
+      if (senderAddress) usdcBalance(senderAddress).then(setBalance).catch(() => {});
     } finally {
       setStep(null);
     }
@@ -191,7 +198,7 @@ export function CreateForm() {
               className="text-center text-[14px] text-danger"
             >
               {error}
-              {source === "toss" && localKey && balance !== null && amount !== null && amount > balance && (
+              {source === "toss" && localKey && balance !== null && amount !== null && amount + GAS_RESERVE > balance && (
                 <>
                   {" · "}
                   <button onClick={() => setAddOpen(true)} className="font-medium text-accent hover:text-accent-hover">

@@ -14,6 +14,10 @@ const messages: Record<string, string> = {
 };
 
 export function friendlyError(err: unknown): string {
+  const text = err instanceof Error ? `${err.message} ${(err as { details?: string }).details ?? ""}` : "";
+  if (/exceeds balance|insufficient funds|insufficient balance/i.test(text)) {
+    return "Not enough USDC for this amount plus the network fee (about $0.01).";
+  }
   if (err instanceof Error && (err.name === "ProviderNotFoundError" || err.name === "ConnectorNotFoundError")) {
     return "No wallet found on this device.";
   }
