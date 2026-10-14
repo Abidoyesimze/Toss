@@ -1,0 +1,7 @@
+cache/
+out/
+broadcast/*/31337/
+.env
+# Keep only the latest real broadcast per chain
+broadcast/**/dry-run/
+broadcast/**/run-[0-9]*.json
