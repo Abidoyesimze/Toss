@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/* Toss design tokens. Dark is the default; light applies only when the system asks for it. */
+:root {
+  color-scheme: dark;
+  --bg: #0a0b0d;
+  --surface: #14161a;
+  --surface-2: #1c1f26;
+  --border: #2a2e38;
+  --text-primary: #f4f5f7;
+  --text-secondary: #9ba1ae;
+  --text-tertiary: #6b7280;
+  --accent: #00c2a8;
+  --accent-hover: #00d4b8;
+  --accent-pressed: #00a892;
+  --accent-muted: rgba(0, 194, 168, 0.12);
+  --accent-fg: #03201c;
+  --danger: #ff5a5a;
+  --danger-muted: rgba(255, 90, 90, 0.12);
+  --success: #00c2a8;
+  --warning: #f5a623;
+  --warning-muted: rgba(245, 166, 35, 0.12);
+  --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef0f3;
+    --border: #e1e4ea;
+    --text-primary: #0a0b0d;
+    --text-secondary: #5b6270;
+    --text-tertiary: #8a909c;
+    --accent: #00a892;
+    --accent-hover: #00b89f;
+    --accent-pressed: #009280;
+    --accent-muted: rgba(0, 168, 146, 0.1);
+    --accent-fg: #ffffff;
+    --danger: #e5484d;
+    --danger-muted: rgba(229, 72, 77, 0.1);
+    --success: #00a892;
+    --warning: #b7791f;
+    --warning-muted: rgba(183, 121, 31, 0.1);
+    --shadow-elevated: 0 4px 24px rgba(10, 11, 13, 0.08);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: var(--danger);
+  --color-danger-muted: var(--danger-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --font-sans: var(--font-inter), ui-sans-serif, -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --radius-card: 16px;
+  --radius-button: 14px;
+  --shadow-elevated: var(--shadow-elevated);
+}
+
+@layer base {
+html,
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Accent focus ring at 40% for every interactive element. */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+}
+
+/* Page and state transitions in CSS so they run before hydration (claim page first paint). */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.page-enter {
+  animation: page-in 200ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* A full screen below the 64px top bar; inside the desktop phone frame on wider viewports. */
+.screen {
+  min-height: calc(100dvh - 64px - env(safe-area-inset-top));
+}
+@media (min-width: 640px) {
+  .screen {
+    min-height: calc(100dvh - 128px);
+  }
+}
